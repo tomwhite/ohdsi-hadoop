@@ -30,30 +30,19 @@ ssh -i /path/to/my.pem ec2-user@<private-ip>
 docker run hello-world
 ```
 
-#### Start Impala in a Docker container
+#### Increase Docker root partition limit
 
-If you just want to run Impala (and HDFS), but not the rest of the Hadoop then do the 
-following, otherwise skip to the next section.
-
-```bash
-docker run -it -d --name impala --hostname impala -p 9000:9000 -p 50010:50010 -p 50020:50020 -p 50070:50070 -p 50075:50075 -p 21000:21000 -p 21050:21050 -p 25000:25000 -p 25010:25010 -p 25020:25020 cpcloud86/impala
-```
-
-Wait a minute then try the following (if it doesn't work then wait and try again):
+This is needed since the Quickstart VM uses the root partition, which is limited to 10GB.
 
 ```bash
-docker exec impala impala-shell -i impala -q 'SELECT VERSION() AS version'
+sudo vi /etc/sysconfig/docker
+# edit to make the options line look like this:
+# OPTIONS="--default-ulimit nofile=1024:4096 --storage-opt dm.basesize=20G"
+sudo service docker restart
+docker run hello-world
 ```
 
-Some troubleshooting commands that may be useful:
-
-```bash
-docker exec -it impala bash
-netstat -na | grep -e '\(9000\|50010\|50020\|50070\|50075\|21000\|21050\|25000\|25010\|25020\)'
-less /var/log/impala/impalad.INFO
-```
-
-#### (Optional) Start Cloudera Quickstart VM in a Docker container
+#### Start Cloudera Quickstart VM in a Docker container
 
 The Cloudera Quickstart VM starts the CDH services (including Spark and others). It is
 available as a [Docker container](https://www.cloudera.com/documentation/enterprise/5-10-x/topics/quickstart_docker_container.html).
