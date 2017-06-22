@@ -50,11 +50,19 @@ The Cloudera Quickstart VM starts the CDH services (including Spark and others).
 available as a [Docker container](https://www.cloudera.com/documentation/enterprise/5-10-x/topics/quickstart_docker_container.html).
 
 ```bash
-docker run --name quickstart --hostname=quickstart.cloudera --privileged=true -t -i -d -p 8888 cloudera/quickstart /usr/bin/docker-quickstart
+docker run --name quickstart --hostname=quickstart.cloudera --privileged=true -t -i -d -p 8888:8888 -p 7180:7180 cloudera/quickstart /usr/bin/docker-quickstart
 docker logs -f quickstart
 ```
 
 Wait until you see the Impala daemons have been started.
+
+Some troubleshooting commands that may be useful:
+
+```bash
+docker exec -it quickstart bash
+netstat -na | grep -e '\(9000\|50010\|50020\|50070\|50075\|21000\|21050\|25000\|25010\|25020\)'
+less /var/log/impala/impalad.INFO
+```
 
 ## 2. Import Common Data Model data
 
