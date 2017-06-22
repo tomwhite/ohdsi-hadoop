@@ -14,13 +14,15 @@ in the cloud._
 
 ### Launch a cloud instance
 
-We'll use EC2, in particular a container-optimized AMI from [here](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI_launch_latest.html).
+We'll use [Google Cloud](https://cloud.google.com/compute/docs/containers/container_vms), with the following command:
 
-Choose the m4.2xlarge instance type.
-Increase root partition storage to 30GB.
-
-You can do the same thing on [Google Cloud](https://cloud.google.com/compute/docs/containers/container_vms), although I 
-have not tested this.
+```bash
+gcloud compute --project "gcp-director" \
+instances create "quickstart-instance-1" \
+--image container-vm --zone "us-east4-a" \
+--machine-type "n1-standard-8" \
+--boot-disk-size=30GB
+```
 
 #### Connect to the instance
 
@@ -31,27 +33,15 @@ ssh -i /path/to/my.pem ec2-user@<public-ip>
 docker run hello-world
 ```
 
-#### Increase Docker root partition limit
-
-This is needed since the Quickstart VM uses the root partition, which is limited to 10GB.
-
-```bash
-sudo vi /etc/sysconfig/docker
-# edit to make the options line look like this:
-# OPTIONS="--default-ulimit nofile=1024:4096 --storage-opt dm.basesize=20G"
-sudo service docker restart
-docker info | grep 'Base Device Size' # should be 20G
-docker run hello-world
-```
-
 #### Start Cloudera Quickstart VM in a Docker container
 
 The Cloudera Quickstart VM starts the CDH services (including Spark and others). It is
 available as a [Docker container](https://www.cloudera.com/documentation/enterprise/5-10-x/topics/quickstart_docker_container.html).
 
 ```bash
-docker run --name quickstart --hostname=quickstart.cloudera --privileged=true -t -i -d -p 8888:8888 -p 7180:7180 cloudera/quickstart /usr/bin/docker-quickstart
-docker logs -f quickstart
+sudo docker run --name quickstart --hostname=quickstart.cloudera --privileged=true -t -i 
+-d -p 8888:8888 -p 7180:7180 cloudera/quickstart /usr/bin/docker-quickstart
+sudo docker logs -f quickstart
 ```
 
 Wait until you see the Impala daemons have been started.
@@ -59,7 +49,7 @@ Wait until you see the Impala daemons have been started.
 Some troubleshooting commands that may be useful:
 
 ```bash
-docker exec -it quickstart bash
+sudo docker exec -it quickstart bash
 netstat -na | grep -e '\(9000\|50010\|50020\|50070\|50075\|21000\|21050\|25000\|25010\|25020\)'
 less /var/log/impala/impalad.INFO
 ```
@@ -69,13 +59,12 @@ less /var/log/impala/impalad.INFO
 Clone this repository so you can run the script to import CDM data.
 
 ```bash
-sudo yum install git -y
 git clone https://github.com/tomwhite/ohdsi-hadoop.git
 ```
 
 Then carry out the import:
 
 ```bash
-docker cp ohdsi-hadoop/import_cdm.sh quickstart:/import_cdm.sh
-docker exec -it quickstart ./import_cdm.sh
+sudo docker cp ohdsi-hadoop/import_cdm.sh quickstart:/import_cdm.sh
+sudo docker exec -it quickstart ./import_cdm.sh
 ```
