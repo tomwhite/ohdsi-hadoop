@@ -62,12 +62,12 @@ Clone this repository so you can run the script to import CDM data.
 
 ```bash
 sudo yum install git -y
-git clone 
+git clone https://github.com/tomwhite/ohdsi-hadoop.git
 ```
 
 Then carry out the import:
 
 ```bash
-docker cp import_cdm.sh quickstart:/import_cdm.sh
+docker cp ohdsi-hadoop/import_cdm.sh quickstart:/import_cdm.sh
 docker exec -it quickstart ./import_cdm.sh
 ```
