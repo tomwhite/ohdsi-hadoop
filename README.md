@@ -65,6 +65,61 @@ docker run \
   -e ACHILLES_PATH_TO_DRIVER=/impala-drivers/Cloudera_ImpalaJDBC4_2.5.36 \
   achilles
 ```
+
+(Based on [https://github.com/OHDSI/Achilles/blob/master/README-impala.md](https://github.com/OHDSI/Achilles/blob/master/README-impala.md).)
+
+## 5. Run ATLAS
+
+Checkout a local copy of Broadsea so we can build the Docker container:
+
+```bash
+git clone https://github.com/OHDSI/Broadsea
+```
+
+Creating missing tables in Impala:
+
+```bash
+docker cp Broadsea/impala/multiple_datasets.sql $(docker-compose ps -q impala):/multiple_datasets.sql
+docker-compose exec impala impala-shell -f multiple_datasets.sql
+```
+
+Create the `ohdsi` database in PostgreSQL:
+
+```bash
+docker cp Broadsea/impala/create_postgres_db.sql $(docker-compose ps -q postgres):/create_postgres_db.sql
+docker-compose exec postgres /bin/sh -c "su - -c 'psql -f /create_postgres_db.sql' postgres"
+```
+
+Start the services and allow the database to be migrated
+
+```bash
+docker-compose -f Broadsea/impala/docker-compose.yml up -d
+# Wait a minute or so
+docker-compose -f Broadsea/impala/docker-compose.yml down
+```
+
+Update the source daimons to point to Impala.
+
+```bash
+docker cp Broadsea/impala/source_source_daimon.sql $(docker-compose ps -q postgres):/source_source_daimon.sql
+docker-compose exec postgres /bin/sh -c "su - -c 'psql -f /source_source_daimon.sql -d ohdsi' postgres"
+```
+
+Start the services up again.
+
+```bash
+docker-compose -f Broadsea/impala/docker-compose.yml up -d
+```
+
+Visit the ATLAS web UI:
+
+```bash
+open http://$(docker-machine ip):8080/atlas
+```
+
+
+(Based on [https://github.com/OHDSI/Broadsea/tree/master/impala](https://github.com/OHDSI/Broadsea/tree/master/impala).)
+
 ## (Optional) Running Docker on Google Cloud
 
 _Note that if you have a powerful
