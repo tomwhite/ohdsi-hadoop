@@ -43,8 +43,8 @@ docker-compose exec impala impala-shell -q 'CREATE DATABASE achilles'
 Next checkout a local copy of Achilles so we can build the Docker container:
 
 ```bash
-git clone https://github.com/OHDSI/Achilles
-# TODO: check out my branch with Docker fixes
+git clone https://github.com/tomwhite/Achilles
+(cd Achilles; git checkout impala-fixes)
 docker build -t achilles Achilles
 ```
 
@@ -73,7 +73,8 @@ docker run \
 Checkout a local copy of Broadsea so we can build the Docker container:
 
 ```bash
-git clone https://github.com/OHDSI/Broadsea
+git clone https://github.com/tomwhite/Broadsea
+(cd Broadsea; git checkout impala-fixes)
 ```
 
 Creating missing tables in Impala:
