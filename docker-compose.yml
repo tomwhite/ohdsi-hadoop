@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
   impala:
-    build: ./impala
+    build: ./docker-impala
     image: ohdsi-hadoop-impala
     networks:
     - ohdsi

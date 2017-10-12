@@ -13,7 +13,11 @@ This downloads the vocab and synpuf 1k datasets locally.
 
 ## 2. Run Impala
 
+Checkout a local copy of [docker-impala](https://github.com/tomwhite/docker-impala) so we can run Impala in a Docker container:
+
+
 ```bash
+git clone https://github.com/tomwhite/docker-impala
 docker-compose up -d
 ```
 
