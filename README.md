@@ -122,8 +122,14 @@ Visit the ATLAS web UI:
 open http://$(docker-machine ip):8080/atlas
 ```
 
-
 (Based on [https://github.com/OHDSI/Broadsea/tree/master/impala](https://github.com/OHDSI/Broadsea/tree/master/impala).)
+
+## 6. Shutdown
+
+```bash
+docker-compose -f Broadsea/impala/docker-compose.yml down
+docker-compose down
+```
 
 ## (Optional) Running Docker on Google Cloud
 
